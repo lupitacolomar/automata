@@ -1,18 +1,18 @@
 defmodule Automata do
-  @moduledoc """
-  Documentation for `Automata`.
-  """
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Automata.hello()
-      :world
-
-  """
-  def hello do
-    :world
+  def nfa do
+    %{
+      :states => [0,1,2,3],
+      :alphabet => [:a, :b],
+      :transitions => %{
+        {0, :a} => [0,1],
+        {0, :b} => [0],
+        {1, :b} => [2],
+        {2, :b} => [3]
+      },
+      :start => 0,
+      :accept => [3]
+    }
   end
+
 end
