@@ -15,4 +15,12 @@ defmodule Automata do
     }
   end
 
+  def determinize(nfa) do
+    start_dfa = MapSet.new([nfa.start])#dfa uses sets !
+    stat = [start_dfa]
+    transitions_dfa = %{}
+
+  end
+  #nfa = Automata.nfa()
+  #Automata.determinize(nfa)
 end
