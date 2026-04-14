@@ -16,20 +16,35 @@ defmodule Automata do
   end
 
   def determinize(nfa) do
-    start_dfa = MapSet.new([nfa.start])#dfa uses sets ! stays the same as b4
-    start = [start_dfa]
+
+    start_dfa = MapSet.new([nfa.start])
+    pending = [start_dfa]
+    discovered_states = [start_dfa]
     transitions_dfa = %{}
+
+  end
+
+  def loop(nfa, [current|rest], discovered_states, transitions_dfa) do
+    #el loopsito pa procesar de que cada estado hasta que no salgan mas nuevos y pues guardar transiciones pipipipi
+    if pending == [] do
+      regresar result
+    end
+  else
+    [head | tail] = pending
+    current_state = head
+    new_state = transition_func(nfa, current_state, alphabet_symbol)
 
   end
   #nfa = Automata.nfa()
   #Automata.determinize(nfa)
 
+
   def transition_func(nfa, states, alphabet_symbol) do
     trans_list =
       Enum.map(states, fn x -> Map.get(nfa.transitions, {x, alphabet_symbol}, []) end) #para recorrer cada estado
 
-    final_list = List.flatten(power_Q) #lista bomnita
-    power_Q = MapSet.new(final_list) # dfa
+    final_list = List.flatten(trans_list) #lista bomnita
+    MapSet.new(final_list) # dfa
 
   end
 
