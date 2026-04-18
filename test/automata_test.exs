@@ -1,8 +1,34 @@
 defmodule AutomataTest do
   use ExUnit.Case
-  doctest Automata
 
-  test "greets the world" do
-    assert Automata.hello() == :world
+  test "NFA structure" do
+    nfa = Automata.nfa()
+
+    assert nfa.states == [0, 1, 2, 3]
+    assert nfa.alphabet == [:a, :b]
+    assert nfa.start == 0
+    assert nfa.accept == [3]
   end
+
+  test "DFA start state" do
+    nfa = Automata.nfa()
+    dfa = Automata.determinize(nfa)
+    assert dfa.start == MapSet.new([0])
+  end
+
+  test "DFA accepts" do
+    nfa = Automata.nfa()
+    dfa = Automata.determinize(nfa)
+    assert Enum.any?(dfa.accept, fn s -> MapSet.member?(s, 3) end)
+  end
+
+  test "transitions" do
+    nfa = Automata.nfa()
+    dfa = Automata.determinize(nfa)
+
+    assert Map.get(dfa.transitions, {MapSet.new([0]), :a}) == MapSet.new([0, 1])
+    assert Map.get(dfa.transitions, {MapSet.new([0]), :b}) == MapSet.new([0])
+    assert Map.get(dfa.transitions, {MapSet.new([0, 1]), :b}) == MapSet.new([0, 2])
+  end
+
 end

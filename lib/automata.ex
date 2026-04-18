@@ -25,7 +25,7 @@ def determinize(nfa) do
 
   accept_dfa =
     Enum.filter(all_states, fn state_set ->
-      Enum.any(nfa.accept, fn acc -> MapSet.member?(state_set, acc) end)
+      Enum.any?(nfa.accept, fn acc -> MapSet.member?(state_set, acc) end)
     end)
 
   %{
