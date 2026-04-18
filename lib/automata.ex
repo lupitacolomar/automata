@@ -85,6 +85,85 @@ defmodule Automata do
 
   end
 
+  def nfa_epsilon do
+    %{
+      states: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      alphabet: [:a, :b],
+      transitions: %{
+        # epsilon transitions
+        {0, :eps} => [1, 7],
+        {1, :eps} => [2, 3],
+        {4, :eps} => [6],
+        {5, :eps} => [6],
+        {6, :eps} => [7],
+        # transiciones normales
+        {2, :a}   => [4],
+        {3, :b}   => [5],
+        {7, :a}   => [8],
+        {8, :b}   => [9],
+        {9, :b}   => [10]
+      },
+      start: 0,
+      accept: [10]
+    }
+  end
+
+  def e_determinize(nfa) do
+
+    start_dfa = e_closure(nfa, [nfa.start])
+    pending = [start_dfa]
+    discovered_states = [start_dfa]
+    transitions_dfa = %{}
+
+    {all_states, all_transitions} = e_det_loop(nfa, pending, discovered_states, transitions_dfa)
+
+
+    accept_dfa =
+      Enum.filter(all_states, fn state_set ->
+        Enum.any?(nfa.accept, fn acc -> MapSet.member?(state_set, acc) end)
+      end)
+
+    %{
+      states: all_states,
+      alphabet: nfa.alphabet,
+      transitions: all_transitions,
+      start: start_dfa,
+      accept: accept_dfa
+    }
+  end
+
+
+  def e_det_loop(_nfa, [], discovered_states, transitions_dfa) do
+    {discovered_states, transitions_dfa}
+  end
+
+
+  def e_det_loop(nfa, [current | rest], discovered_states, transitions_dfa) do
+    {new_discovered, new_pending, new_transitions} =
+      Enum.reduce(nfa.alphabet, {discovered_states, rest, transitions_dfa}, fn symbol, {disc, pend, trans} ->
+
+        raw_next = Enum.flat_map(current, fn state ->
+          Map.get(nfa.transitions, {state, symbol}, [])
+        end)
+
+        new_state = e_closure(nfa, raw_next)
+
+
+        if MapSet.size(new_state) > 0 do
+          trans = Map.put(trans, {current, symbol}, new_state)
+          if not Enum.member?(disc, new_state) do
+            {[new_state | disc], [new_state | pend], trans}
+          else
+            {disc, pend, trans}
+          end
+        else
+          {disc, pend, trans}
+        end
+      end)
+
+    e_det_loop(nfa, new_pending, new_discovered, new_transitions)
+  end
+
 end
 
 #nfa = Automata.nfa()

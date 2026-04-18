@@ -32,4 +32,20 @@ defmodule AutomataTest do
     assert Map.get(dfa.transitions, {MapSet.new([0, 1]), :b}) == MapSet.new([0, 2])
   end
 
+  test "e_determinize start" do
+    nfa = Automata.nfa_epsilon()
+    dfa = Automata.e_determinize(nfa)
+
+    # el estado inicial debe ser e_closure({0}) = {0,1,2,3}
+    assert dfa.start == MapSet.new([0, 1, 2, 3, 7])
+  end
+
+  test "e_determinize tiene estados de aceptacion" do
+    nfa = Automata.nfa_epsilon()
+    dfa = Automata.e_determinize(nfa)
+
+    # debe haber al menos un estado que contenga al 10
+    assert Enum.any?(dfa.accept, fn s -> MapSet.member?(s, 10) end)
+  end
+
 end
