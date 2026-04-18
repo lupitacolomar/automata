@@ -15,27 +15,27 @@ defmodule Automata do
     }
   end
 
-def determinize(nfa) do
-  start_dfa = MapSet.new([nfa.start])
-  pending = [start_dfa]
-  discovered_states = [start_dfa]
-  transitions_dfa = %{}
+  def determinize(nfa) do
+    start_dfa = MapSet.new([nfa.start])
+    pending = [start_dfa]
+    discovered_states = [start_dfa]
+    transitions_dfa = %{}
 
-  {all_states, all_transitions} = loop(nfa, pending, discovered_states, transitions_dfa)
+    {all_states, all_transitions} = loop(nfa, pending, discovered_states, transitions_dfa)
 
-  accept_dfa =
-    Enum.filter(all_states, fn state_set ->
-      Enum.any?(nfa.accept, fn acc -> MapSet.member?(state_set, acc) end)
-    end)
+    accept_dfa =
+      Enum.filter(all_states, fn state_set ->
+        Enum.any?(nfa.accept, fn acc -> MapSet.member?(state_set, acc) end)
+      end)
 
-  %{
-    states: all_states,
-    alphabet: nfa.alphabet,
-    transitions: all_transitions,
-    start: start_dfa,
-    accept: accept_dfa
-  }
-end
+    %{
+      states: all_states,
+      alphabet: nfa.alphabet,
+      transitions: all_transitions,
+      start: start_dfa,
+      accept: accept_dfa
+    }
+  end
 
   def loop(_nfa, [], discovered_states, transitions_dfa) do
     {discovered_states, transitions_dfa}
