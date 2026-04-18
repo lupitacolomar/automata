@@ -28,6 +28,7 @@ defmodule AutomataTest do
 
     assert Map.get(dfa.transitions, {MapSet.new([0]), :a}) == MapSet.new([0, 1])
     assert Map.get(dfa.transitions, {MapSet.new([0]), :b}) == MapSet.new([0])
+
     assert Map.get(dfa.transitions, {MapSet.new([0, 1]), :b}) == MapSet.new([0, 2])
   end
 
