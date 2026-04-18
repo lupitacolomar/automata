@@ -15,6 +15,27 @@ defmodule Automata do
     }
   end
 
+  def e_closure(nfa, states) do
+    initial = MapSet.new(states)
+    e_closure_loop(nfa, MapSet.to_list(initial), initial)
+  end
+
+  defp e_closure_loop(_nfa, [], visited) do
+    visited
+  end
+  defp e_closure_loop(nfa, [current | rest], visited) do
+    epsilon_neighbors = Map.get(nfa.transitions, {current, :eps}, [])
+    new_states = Enum.filter(epsilon_neighbors, fn s ->
+      not MapSet.member?(visited, s)
+    end)
+
+    new_visited = Enum.reduce(new_states, visited, fn s, acc ->
+      MapSet.put(acc, s)
+    end)
+
+    e_closure_loop(nfa, rest ++ new_states, new_visited)
+  end
+
   def determinize(nfa) do
     start_dfa = MapSet.new([nfa.start])
     pending = [start_dfa]
